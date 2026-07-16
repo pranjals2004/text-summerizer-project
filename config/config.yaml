@@ -1,0 +1,5 @@
+artifacts_root: artifacts
+
+nlp_preprocessing:
+  root_dir: artifacts/nlp_preprocessing
+  status_file: artifacts/nlp_preprocessing/status.json

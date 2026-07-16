@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent News Summarization & Sentiment Analysis System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="header-logo">
+                <i class="fa-solid fa-brain-circuit logo-icon"></i>
+                <div class="logo-text">
+                    <h1>AuraNews</h1>
+                    <span>NLP & LLM Intelligence Hub</span>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <div id="mode-badge" class="mode-badge local-mode">
+                    <span class="pulse-dot"></span>
+                    <span class="mode-label">Local NLP Mode</span>
+                </div>
+                <button id="toggle-settings-btn" class="icon-btn" title="API Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- SETTINGS SLIDE-DOWN PANEL -->
+        <div id="settings-panel" class="settings-panel hidden">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h3><i class="fa-solid fa-key"></i> API Configuration</h3>
+                    <p>Enter your Gemini API key to enable live AI summarization, sentiment classification, and conversational Q&A on custom articles.</p>
+                </div>
+                <div class="input-group">
+                    <label for="api-key-input">Gemini API Key</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-shield-halved input-icon"></i>
+                        <input type="password" id="api-key-input" placeholder="AIzaSy..." autocomplete="off">
+                        <button id="save-key-btn" class="btn btn-primary btn-sm">Save Key</button>
+                    </div>
+                    <span class="help-text">Your key is stored locally in your browser's session storage and is never sent elsewhere.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN GRID LAYOUT -->
+        <main class="main-grid">
+            
+            <!-- LEFT PANEL: INPUT & DEMO SELECT -->
+            <section class="panel-left card">
+                <div class="section-title">
+                    <h2><i class="fa-solid fa-file-pen"></i> News Article Source</h2>
+                    <p>Select a pre-analyzed demo article or paste custom text below.</p>
+                </div>
+
+                <!-- DEMO SELECT CARDS -->
+                <div class="demo-grid">
+                    <button class="demo-card active" data-id="tech">
+                        <div class="card-icon tech"><i class="fa-solid fa-microchip"></i></div>
+                        <div class="card-info">
+                            <h4>AI Breakthrough</h4>
+                            <span>Technology</span>
+                        </div>
+                    </button>
+                    <button class="demo-card" data-id="space">
+                        <div class="card-icon space"><i class="fa-solid fa-user-astronaut"></i></div>
+                        <div class="card-info">
+                            <h4>Lunar Water Ice</h4>
+                            <span>Space Exploration</span>
+                        </div>
+                    </button>
+                    <button class="demo-card" data-id="business">
+                        <div class="card-icon business"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="card-info">
+                            <h4>Renewables Over Coal</h4>
+                            <span>Green Business</span>
+                        </div>
+                    </button>
+                    <button class="demo-card" data-id="science">
+                        <div class="card-icon science"><i class="fa-solid fa-flask"></i></div>
+                        <div class="card-info">
+                            <h4>50 New Species</h4>
+                            <span>Deep Sea Science</span>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="divider"><span>OR CUSTOM TEXT</span></div>
+
+                <!-- CUSTOM TEXT INPUT -->
+                <div class="custom-input-group">
+                    <label for="article-title-input">Article Title (Optional)</label>
+                    <input type="text" id="article-title-input" placeholder="Enter article headline...">
+                    
+                    <label for="article-text-input">Article Content</label>
+                    <textarea id="article-text-input" placeholder="Paste the full text of your news article here (minimum 50 words)..."></textarea>
+                    
+                    <div class="word-counter">
+                        <span id="char-count-badge">0 characters</span> • <span id="word-count-badge">0 words</span>
+                    </div>
+                </div>
+
+                <!-- SUBMIT BUTTONS -->
+                <div class="action-bar">
+                    <button id="reset-btn" class="btn btn-secondary"><i class="fa-solid fa-rotate-left"></i> Clear</button>
+                    <button id="analyze-btn" class="btn btn-gradient"><i class="fa-solid fa-bolt"></i> Run Intelligence Pipeline</button>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL: DASHBOARD RESULTS -->
+            <section class="panel-right card">
+                
+                <!-- DASHBOARD TABS -->
+                <nav class="dashboard-tabs">
+                    <button class="tab-btn active" data-tab="tab-summary">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>Summary & Sentiment</span>
+                    </button>
+                    <button class="tab-btn" data-tab="tab-nlp">
+                        <i class="fa-solid fa-gears"></i>
+                        <span>NLP Preprocessing</span>
+                    </button>
+                    <button class="tab-btn" data-tab="tab-entities">
+                        <i class="fa-solid fa-tags"></i>
+                        <span>Entities & Keywords</span>
+                    </button>
+                    <button class="tab-btn" data-tab="tab-qa">
+                        <i class="fa-solid fa-comments"></i>
+                        <span>Interactive Q&A</span>
+                    </button>
+                </nav>
+
+                <!-- TAB CONTENTS -->
+                <div class="tab-container">
+                    
+                    <!-- LOADING STATE (Overlay/Skeleton) -->
+                    <div id="loading-overlay" class="loading-overlay hidden">
+                        <div class="spinner-box">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+                        <p>Processing article through NLP & LLM pipelines...</p>
+                    </div>
+
+                    <!-- TAB 1: SUMMARY & SENTIMENT -->
+                    <div id="tab-summary" class="tab-content active">
+                        <div class="analysis-grid">
+                            
+                            <!-- Summary Card -->
+                            <div class="analysis-card summary-box">
+                                <h3><i class="fa-solid fa-align-left text-gradient"></i> Executive Summary</h3>
+                                <div class="summary-body">
+                                    <p id="summary-text">Select an article or paste your own, then click "Run Intelligence Pipeline" to generate a summary.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Sentiment Card -->
+                            <div class="analysis-card sentiment-box">
+                                <h3><i class="fa-solid fa-heart-pulse text-gradient"></i> Sentiment Analysis</h3>
+                                <div class="sentiment-widget">
+                                    <!-- Radial Gauge -->
+                                    <div class="gauge-container">
+                                        <svg class="gauge" viewBox="0 0 100 100">
+                                            <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                                            <circle id="gauge-fill" class="gauge-fill" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                                        </svg>
+                                        <div class="gauge-text">
+                                            <span id="sentiment-score-num">0%</span>
+                                            <small id="sentiment-label-text">Neutral</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Emotional Breakdown -->
+                                    <div class="emotions-list">
+                                        <h4>Emotion Breakdown</h4>
+                                        <div class="emotion-item">
+                                            <span class="emotion-name">Joy</span>
+                                            <div class="progress-bar"><div id="emotion-joy" class="progress-fill joy" style="width: 0%"></div></div>
+                                            <span id="emotion-joy-val" class="emotion-val">0%</span>
+                                        </div>
+                                        <div class="emotion-item">
+                                            <span class="emotion-name">Trust</span>
+                                            <div class="progress-bar"><div id="emotion-trust" class="progress-fill trust" style="width: 0%"></div></div>
+                                            <span id="emotion-trust-val" class="emotion-val">0%</span>
+                                        </div>
+                                        <div class="emotion-item">
+                                            <span class="emotion-name">Fear</span>
+                                            <div class="progress-bar"><div id="emotion-fear" class="progress-fill fear" style="width: 0%"></div></div>
+                                            <span id="emotion-fear-val" class="emotion-val">0%</span>
+                                        </div>
+                                        <div class="emotion-item">
+                                            <span class="emotion-name">Anger</span>
+                                            <div class="progress-bar"><div id="emotion-anger" class="progress-fill anger" style="width: 0%"></div></div>
+                                            <span id="emotion-anger-val" class="emotion-val">0%</span>
+                                        </div>
+                                        <div class="emotion-item">
+                                            <span class="emotion-name">Sadness</span>
+                                            <div class="progress-bar"><div id="emotion-sadness" class="progress-fill sadness" style="width: 0%"></div></div>
+                                            <span id="emotion-sadness-val" class="emotion-val">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sentiment-explanation">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <p id="sentiment-explanation-text">No sentiment analysis run yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: NLP PREPROCESSING -->
+                    <div id="tab-nlp" class="tab-content">
+                        <!-- Stats Grid -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-title">Characters</span>
+                                <span id="stat-chars" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-title">Words</span>
+                                <span id="stat-words" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-title">Sentences</span>
+                                <span id="stat-sentences" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-title">Lexical Diversity</span>
+                                <span id="stat-diversity" class="stat-value">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="nlp-details-grid">
+                            <!-- POS Tag Distribution Chart -->
+                            <div class="analysis-card pos-chart-box">
+                                <h3><i class="fa-solid fa-chart-simple text-gradient"></i> Parts-of-Speech (POS) Distribution</h3>
+                                <div id="pos-chart-container" class="pos-chart-container">
+                                    <!-- Rendered dynamically by JS -->
+                                    <p class="placeholder-text">Run analysis to view parts of speech tags distribution.</p>
+                                </div>
+                            </div>
+
+                            <!-- Readability and Tokens -->
+                            <div class="analysis-card tokens-box">
+                                <h3><i class="fa-solid fa-book-open text-gradient"></i> Document Readability</h3>
+                                <div class="readability-card">
+                                    <div class="readability-header">
+                                        <span class="readability-label">Flesch Reading Ease:</span>
+                                        <span id="readability-score" class="readability-val">N/A</span>
+                                    </div>
+                                    <div class="progress-bar"><div id="readability-progress" class="progress-fill readability" style="width: 0%"></div></div>
+                                    <span id="readability-grade" class="readability-desc">Please process text to measure complexity.</span>
+                                </div>
+
+                                <h3 style="margin-top: 1.5rem;"><i class="fa-solid fa-list-check text-gradient"></i> Filtered Nouns/Verbs Sample (No Stopwords)</h3>
+                                <div id="tokens-list" class="tokens-list">
+                                    <!-- Filled dynamically -->
+                                    <span class="placeholder-text">Tokens will appear here.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: ENTITIES & KEYWORDS -->
+                    <div id="tab-entities" class="tab-content">
+                        <div class="entities-grid">
+                            <!-- Left: Categorized Entity list -->
+                            <div class="analysis-card entities-list-box">
+                                <h3><i class="fa-solid fa-users-gear text-gradient"></i> Extracted Entities</h3>
+                                <div id="entities-container" class="entities-container">
+                                    <!-- Dynamic -->
+                                    <p class="placeholder-text">Run analysis to view entity classifications.</p>
+                                </div>
+                            </div>
+
+                            <!-- Right: Tag cloud/Word Frequency -->
+                            <div class="analysis-card tag-cloud-box">
+                                <h3><i class="fa-solid fa-cloud text-gradient"></i> Top Keyword Frequency</h3>
+                                <div id="keywords-cloud" class="keywords-cloud">
+                                    <!-- Dynamic -->
+                                    <p class="placeholder-text">Keywords frequency will be shown here.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: INTERACTIVE Q&A -->
+                    <div id="tab-qa" class="tab-content">
+                        <div class="chat-wrapper">
+                            <!-- Welcome / Warning -->
+                            <div class="chat-header-notice">
+                                <i class="fa-solid fa-circle-question"></i>
+                                <span>Ask any question about the article. The LLM will answer based exclusively on the text content.</span>
+                            </div>
+
+                            <!-- Chat Messages Console -->
+                            <div id="chat-messages" class="chat-messages">
+                                <div class="message system-msg">
+                                    <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                                    <div class="msg-content">
+                                        <p>Hello! I have loaded the article. Ask me any questions about its details, quotes, or implications.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Input Box -->
+                            <div class="chat-input-area">
+                                <input type="text" id="chat-input" placeholder="Type your question here (e.g. 'Who led this research?')..." disabled>
+                                <button id="chat-send-btn" class="btn btn-primary" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+        
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <p>Developed using NLP preprocessing pipelines and Gemini Large Language Models • © 2026 AuraNews Inc.</p>
+        </footer>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
